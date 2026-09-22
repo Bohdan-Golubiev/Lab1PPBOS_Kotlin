@@ -10,20 +10,44 @@ fun main() {
     val arraySize = 1000000000
     val threadCount = 8
 
-    //defaultOption(arraySize, threadCount)
+    val array = IntArray(arraySize) { 1 }
+
+    //sumInMainThread(array)
+
+    //defaultOption(array, threadCount)
+
+    /*val start = System.nanoTime()
     runBlocking{
-        val totalSum = sumWithCoroutines(arraySize, threadCount)
+        val totalSum = sumWithCoroutines(array, threadCount)
+        val end = System.nanoTime()
+        println("Час виконання: ${(end - start) / 1_000_000} мс")
         println("Загальна сума елементів масиву: $totalSum")
         println("Очікувана сума (перевірка): ${arraySize.toLong()}")
-    }
+    }*/
 }
 
-suspend fun sumWithCoroutines(arraySize: Int, threadCount: Int): Long = coroutineScope {
-    println("Розмір масиву: $arraySize")
+fun sumInMainThread(array: IntArray)
+{
+    println("Розмір масиву: ${array.size}")
+
+    val start = System.nanoTime()
+
+    var sum = 0L
+    for(i in 0 until array.size)
+    {
+        sum += array[i]
+    }
+
+    val end = System.nanoTime()
+    println("Час виконання: ${(end - start) / 1_000_000} мс")
+    println("Загальна сума елементів масиву: $sum")
+    println("Очікувана сума (перевірка): ${array.size.toLong()}")}
+
+suspend fun sumWithCoroutines(array: IntArray, threadCount: Int): Long = coroutineScope {
+    println("Розмір масиву: $array.size")
     println("Кількість потоків: $threadCount")
 
-    val array = IntArray(arraySize) { 1 }
-    val chunkSize = arraySize / threadCount
+    val chunkSize = array.size / threadCount
 
     val deferred = (0 until threadCount).map { t ->
         val from = t * chunkSize
@@ -43,17 +67,17 @@ suspend fun sumWithCoroutines(arraySize: Int, threadCount: Int): Long = coroutin
     deferred.awaitAll().sum()
 }
 
-fun defaultOption(arraySize: Int, threadCount: Int ){
+fun defaultOption(array: IntArray, threadCount: Int ){
 
-    println("Розмір масиву: $arraySize")
+    println("Розмір масиву: ${array.size}")
     println("Кількість потоків: $threadCount")
 
-    val array = IntArray(arraySize) { 1 }
+    val start = System.nanoTime()
 
-    val chunkSize = arraySize / threadCount
+    val chunkSize = array.size / threadCount
     val workers = Array(threadCount) { t ->
         val from = t * chunkSize
-        val to = if (t == threadCount - 1) arraySize else from + chunkSize
+        val to = if (t == threadCount - 1) array.size else from + chunkSize
         SumWorker(array, from, to).apply { start() }
     }
 
@@ -63,8 +87,11 @@ fun defaultOption(arraySize: Int, threadCount: Int ){
         totalSum += worker.partialSum
     }
 
+    val end = System.nanoTime()
+    println("Час виконання: ${(end - start) / 1_000_000} мс")
+
     println("Загальна сума елементів масиву: $totalSum")
-    println("Очікувана сума (перевірка): ${arraySize.toLong()}")
+    println("Очікувана сума (перевірка): ${array.size.toLong()}")
 }
 
 class SumWorker(
