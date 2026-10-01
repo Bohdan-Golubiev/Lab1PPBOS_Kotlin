@@ -23,7 +23,7 @@ val threadCount = 8
 |  1 000 000 000  | `sumMultiThread`    |       4 |     260 |
 |  1 000 000 000  | `sumWithCoroutines` |       4 |     360 |
 |  1 000 000 000  | `sumMultiThread`    |       8 |     245 |
-|  1 000 000 000  | `sumWithCoroutines` |       8 |     340 |
+|  1 000 000 000  | `sumWithCoroutines` |       8 |     250 |
 
 
 ## Висновки

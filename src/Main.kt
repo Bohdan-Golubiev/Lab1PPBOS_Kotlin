@@ -58,7 +58,7 @@ suspend fun sumWithCoroutines(array: IntArray, threadCount: Int): Long = corouti
     val deferred = (0 until threadCount).map { t ->
         val from = t * chunkSize
         val to = if (t == threadCount - 1) array.size else from + chunkSize
-        async(Dispatchers.Default) {
+        async(Dispatchers.IO) {
             var sum = 0L
             for (i in from until to)
             {
